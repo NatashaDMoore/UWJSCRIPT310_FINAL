@@ -3,32 +3,32 @@ const apiKey = '2d9421d34e27b0950f7fb295d98ec028';
 const accessToken = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyZDk0MjFkMzRlMjdiMDk1MGY3ZmIyOTVkOThlYzAyOCIsIm5iZiI6MTczMzcxMzE4OC40ODQsInN1YiI6IjY3NTY1ZDI0MDk4MmI0NjI2NzhhMWU1NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.pGWPwreBh9nlrlcSaA-ecjpA3uuoReyGLQn5FZ6HnDs';
 
 
-// ------ TEST -------
-console.log('connected');
+// // ------ TEST -------
+// console.log('connected');
 
-const add = (num1,num2) => {
-    return num1 + num2;
-};
+// const add = (num1,num2) => {
+//     return num1 + num2;
+// };
 
-// Movie details
-fetch(`https://api.themoviedb.org/3/movie/550`, {
-    method: 'GET',
-    headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-    }
-})
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(movie => {
-        console.log('Full Movie Details:', movie);
-    })
-    .catch(error => console.error('Error:', error));
-// -------------------
+// // Movie details
+// fetch(`https://api.themoviedb.org/3/movie/550`, {
+//     method: 'GET',
+//     headers: {
+//         Authorization: `Bearer ${accessToken}`,
+//         'Content-Type': 'application/json',
+//     }
+// })
+//     .then(response => {
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! Status: ${response.status}`);
+//         }
+//         return response.json();
+//     })
+//     .then(movie => {
+//         console.log('Full Movie Details:', movie);
+//     })
+//     .catch(error => console.error('Error:', error));
+// // -------------------
 
 
 // formatString function
@@ -207,6 +207,11 @@ document.getElementById('view-watchlist').addEventListener('click', (e) => {
     };
 });
 
+
+
+fetch('https://api.themoviedb.org/3/trending/movie/day?language=en-US', options)
+
+
 // ------------ Genre IDs to Names ----------------
 const getGenres = (genreIds) => {
     const genreMap = {
@@ -232,4 +237,15 @@ const getGenres = (genreIds) => {
     };
 
     return genreIds.map((id) => genreMap[id] || 'Unknown');
+};
+
+// ------------ Certification IDs to rating ----------------
+const getCertification = (order) => certMap[order] ?? 'Unknown';
+const certMap = {
+    4: 'R',
+    2: 'PG',
+    5: 'NC-17',
+    1: 'G',
+    0: 'NR',
+    3: 'PG-13'
 };

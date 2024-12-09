@@ -5,14 +5,14 @@ describe('testing tests', () => {
     });
 });
 
+
 describe('movie tests', () => {
     it('should convert string from search into string for url', () => {
-       const userInput = ' Fight Club  ';
+        const userInput = ' Fight Club  ';
         const result = formatString(userInput);
         expect(result).toEqual('Fight+Club');
-        console.log(result);
     });
-    
+
     it('should return genre names for valid IDs', () => {
         const genreIds = [28, 12, 16];
         const result = getGenres(genreIds);
