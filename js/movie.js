@@ -2,144 +2,212 @@
 const apiKey = '2d9421d34e27b0950f7fb295d98ec028';
 const accessToken = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyZDk0MjFkMzRlMjdiMDk1MGY3ZmIyOTVkOThlYzAyOCIsIm5iZiI6MTczMzcxMzE4OC40ODQsInN1YiI6IjY3NTY1ZDI0MDk4MmI0NjI2NzhhMWU1NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.pGWPwreBh9nlrlcSaA-ecjpA3uuoReyGLQn5FZ6HnDs';
 
+const form = document.getElementById('movie-search-form');
+const titleSearch = document.getElementById('title-search');
 
 // // ------ TEST -------
-// console.log('connected');
+console.log('connected');
 
-// const add = (num1,num2) => {
-//     return num1 + num2;
-// };
+const add = (num1,num2) => {
+    return num1 + num2;
+};
 
-// // Movie details
-// fetch(`https://api.themoviedb.org/3/movie/550`, {
+// const movieId = 929590;
+// const apiUrl = `https://api.themoviedb.org/3/movie/${movieId}`;
+
+// const apiUrl = `https://api.themoviedb.org/3/discover/movie?with_companies=41077&sort_by=vote_average.desc&vote_count.gte=50&language=en-US`;
+
+// fetch(apiUrl, {
 //     method: 'GET',
 //     headers: {
 //         Authorization: `Bearer ${accessToken}`,
 //         'Content-Type': 'application/json',
-//     }
+//     },
 // })
-//     .then(response => {
+//     .then((response) => {
 //         if (!response.ok) {
-//             throw new Error(`HTTP error! Status: ${response.status}`);
+//             throw new Error(`HTTP error: ${response.status}`);
 //         }
 //         return response.json();
 //     })
-//     .then(movie => {
-//         console.log('Full Movie Details:', movie);
+//     .then((movieData) => {
+//         console.log('Movie Data:', movieData);
 //     })
-//     .catch(error => console.error('Error:', error));
+//     .catch((error) => {
+//         console.error('Error fetching movie data:', error);
+//     });
 // // -------------------
 
+// ====================================================================
+//                              MAPS
+// ====================================================================
 
-// formatString function
+
+// ------------ Genre IDs to Names ----------------
+const getGenres = (genreIds) => {
+    const genreMap = {
+        28: 'Action',
+        12: 'Adventure',
+        16: 'Animation',
+        35: 'Comedy',
+        80: 'Crime',
+        99: 'Documentary',
+        18: 'Drama',
+        10751: 'Family',
+        14: 'Fantasy',
+        36: 'History',
+        27: 'Horror',
+        10402: 'Music',
+        9648: 'Mystery',
+        10749: 'Romance',
+        878: 'Science Fiction',
+        10770: 'TV Movie',
+        53: 'Thriller',
+        10752: 'War',
+        37: 'Western',
+    };
+
+    return genreIds.map((id) => genreMap[id] || 'Unknown');
+};
+
+// ------------ Certification IDs to rating ----------------
+const getCertification = (order) => certMap[order] ?? 'Unknown';
+const certMap = {
+    4: 'R',
+    2: 'PG',
+    5: 'NC-17',
+    1: 'G',
+    0: 'NR',
+    3: 'PG-13'
+};
+
+
+// ====================================================================
+//                              FUNCTIONS
+// ====================================================================
+
+
+// ------------------------ formatString function ------------------------
 const formatString = (string) => {
     return string.trim().replace(/\s+/g,'+');
 };
 
-// ------------- FORM -------------------------
 
-const form = document.getElementById('movie-search-form');
-const titleSearch = document.getElementById('title-search');
+// ------------------------ renderMovieCard Function ------------------------
+const renderMovieCard = (movie) => {
+    // Create the main card container
+    const card = document.createElement('div');
+    card.classList.add('row', 'mb-4', 'border', 'rounded', 'p-3', 'bg-light');
 
-// Event Listener for the Form Submission
-form.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    console.log('Submit event triggered');
+    // Create the poster column
+    const posterCol = document.createElement('div');
+    posterCol.classList.add('col-md-4', 'd-flex', 'align-items-center', 'justify-content-center');
+    const posterImg = document.createElement('img');
+    posterImg.src = movie.poster_path
+        ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
+        : 'https://via.placeholder.com/200x300?text=No+Image'; // Placeholder image
+    posterImg.alt = `${movie.title} Poster`;
+    posterImg.classList.add('img-fluid', 'rounded');
+    posterCol.appendChild(posterImg);
 
-    // Check if the submitter is the search button
-    const searchButton = document.getElementById('search-button');
+    // Create the details column
+    const detailsCol = document.createElement('div');
+    detailsCol.classList.add('col-md-8');
+    detailsCol.innerHTML = `
+        <h3>${movie.title}</h3>
+        <p><strong>Year Released:</strong> ${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</p>
+        <p><strong>Genre:</strong> ${movie.genre_ids ? getGenres(movie.genre_ids).join(', ') : 'N/A'}</p>
+        <p><strong>Rating:</strong> ${movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'} / 10</p>
+        <p><strong>Description:</strong> ${movie.overview || 'No description available.'}</p>
+        <button class="btn btn-secondary add-to-watchlist" data-movie-id="${movie.id}" data-movie-title="${movie.title}">Add to Watch List</button>
+    `;
 
-    if (e.submitter !== searchButton) {
-        console.log('Form submitted, but not via the search button.');
-        return;
-    }
+    // Append the columns to the card
+    card.appendChild(posterCol);
+    card.appendChild(detailsCol);
 
-    // Format user input
-    const title = formatString(titleSearch.value);
+    return card;
+};
 
-    // Build the query URL
-    let url = `https://api.themoviedb.org/3/search/movie?query=${title}`;
-    
-    try {
-    // Fetch Movies
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        },
-    });
 
-    if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log('Movies Data:', data.results);
-    
-    // Render Movie Cards
+// ------------------------ displayMovies Function ------------------------
+const displayMovies = (movies) => {
     const moviesContainer = document.getElementById('movies-container');
     moviesContainer.innerHTML = ''; // Clear previous results
 
-    if (!data.results || data.results.length === 0) {
+    if (!movies || movies.length === 0) {
         moviesContainer.innerHTML = '<p>No movies found.</p>';
         return;
     }
 
-    data.results.forEach((movie) => {
-        // Create the main card container
-        const card = document.createElement('div');
-        card.classList.add('row', 'mb-4', 'border', 'rounded', 'p-3', 'bg-light');
-
-        // Create the poster column
-        const posterCol = document.createElement('div');
-        posterCol.classList.add('col-md-4', 'd-flex', 'align-items-center', 'justify-content-center');
-        const posterImg = document.createElement('img');
-        posterImg.src = movie.poster_path
-            ? `https://image.tmdb.org/t/p/w200${movie.poster_path}`
-            : 'https://via.placeholder.com/200x300?text=No+Image'; // Placeholder if no image
-        posterImg.alt = `${movie.title} Poster`;
-        posterImg.classList.add('img-fluid', 'rounded');
-        posterCol.appendChild(posterImg);
-
-        // Create the details column
-        const detailsCol = document.createElement('div');
-        detailsCol.classList.add('col-md-8');
-        detailsCol.innerHTML = `
-            <h3>${movie.title}</h3>
-            <p><strong>Year Released:</strong> ${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</p>
-            <p><strong>Genre:</strong> ${movie.genre_ids ? getGenres(movie.genre_ids).join(', ') : 'N/A'}</p>
-            <p><strong>Rating:</strong> ${movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'} / 10</p>
-            <p><strong>Description:</strong> ${movie.overview || 'No description available.'}</p>
-            <button class="btn btn-primary view-details" data-movie-id="${movie.id}">View Details</button>
-            <button class="btn btn-secondary add-to-watchlist" data-movie-id="${movie.id}" data-movie-title="${movie.title}">Add to Watch List</button>
-        `;
-
-        // Append the columns to the card
-        card.appendChild(posterCol);
-        card.appendChild(detailsCol);
-
-        // Append the card to the container
-        moviesContainer.appendChild(card);
+    movies.forEach((movie) => {
+        const movieCard = renderMovieCard(movie);
+        moviesContainer.appendChild(movieCard);
     });
 
-        // Add event listeners to "Add to Watch List" buttons
-        document.querySelectorAll('.add-to-watchlist').forEach((button) => {
-            button.addEventListener('click', (e) => {
-                const movieId = e.target.getAttribute('data-movie-id');
-                const movieTitle = e.target.getAttribute('data-movie-title');
-                addToWatchList(movieId, movieTitle);
-            });
+    // Add event listeners to "Add to Watch List" buttons
+    document.querySelectorAll('.add-to-watchlist').forEach((button) => {
+        button.addEventListener('click', (e) => {
+            const movieId = e.target.getAttribute('data-movie-id');
+            const movieTitle = e.target.getAttribute('data-movie-title');
+            addToWatchList(movieId, movieTitle);
+        });
+    });
+};
+
+// ------------------------ Popup ------------------------
+setTimeout(() => {
+    const popup = document.getElementById('popup');
+    popup.style.display = 'flex'; // Center
+}, 3000);
+
+// Close the popup
+document.getElementById('close-popup').addEventListener('click', () => {
+    const popup = document.getElementById('popup');
+    popup.style.display = 'none';
+});
+
+
+// ====================================================================
+//                              FORMS
+// ====================================================================
+
+
+// ------------- SEARCH FORM -------------------------
+
+form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    if (e.submitter !== document.getElementById('search-button')) return;
+
+    const title = formatString(titleSearch.value);
+    const url = `https://api.themoviedb.org/3/search/movie?query=${title}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
         });
 
-    }
-    catch (error) {
-    console.error('Error fetching movies:', error);
+        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+
+        const data = await response.json();
+        displayMovies(data.results);
+        console.log(data);
+    } catch (error) {
+        console.error('Error fetching movies:', error);
     }
 });
 
 
-// ---------- Watch List ---------------------
+
+// ====================================================================
+//                              WATCH LIST
+// ====================================================================
+
 
 // Add Movie to Watch List
 const addToWatchList = (movieId, movieTitle) => {
@@ -207,45 +275,130 @@ document.getElementById('view-watchlist').addEventListener('click', (e) => {
     };
 });
 
+// ====================================================================
+//                              BROWSE BAR
+// ====================================================================
+
+// BROWSE BY GENRE
+
+document.querySelectorAll('.browse-genre').forEach((link) => {
+    link.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        const genreId = e.target.getAttribute('data-genre');
+
+        const url = `https://api.themoviedb.org/3/discover/movie?with_genres=${genreId}&sort_by=popularity.desc&language=en-US`;
+
+        try {
+            // Fetch movies for the selected genre
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`, // Make sure accessToken is defined
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log(`Movies for Genre ${genreId}:`, data.results);
+
+            // Display the movies
+            displayMovies(data.results);
+        } catch (error) {
+            console.error(`Error fetching movies for genre ${genreId}:`, error);
+        }
+    });
+});
+
+// BROWSE BY TOP RATED
+
+document.querySelectorAll('.browse-top-rated').forEach((link) => {
+    link.addEventListener('click', async (e) => {
+        e.preventDefault(); // Prevent default link behavior
+
+        const type = e.target.getAttribute('data-type');
+        let url;
+
+        // Determine the URL based on the type
+        if (type === 'trending') {
+            url = 'https://api.themoviedb.org/3/trending/movie/day?language=en-US';
+        } else if (type === 'all-time-highest') {
+            url = 'https://api.themoviedb.org/3/movie/top_rated?language=en-US';
+        } else if (type === 'best-a24') {
+            url = `https://api.themoviedb.org/3/discover/movie?with_companies=41077&sort_by=vote_average.desc&vote_count.gte=50&language=en-US`;
+        } else {
+            console.log(`No handler defined for type: ${type}`);
+            return;
+        }
+
+        try {
+            // Fetch movies from the URL
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log(`${type} Movies Data:`, data.results);
+
+            // Display the movies
+            displayMovies(data.results);
+        } catch (error) {
+            console.error(`Error fetching ${type} movies:`, error);
+        }
+    });
+});
 
 
-fetch('https://api.themoviedb.org/3/trending/movie/day?language=en-US', options)
+// BROWSE BY YEAR
 
+document.querySelectorAll('.browse-year').forEach((link) => {
+    link.addEventListener('click', async (e) => {
+        e.preventDefault(); // Prevent default link behavior
 
-// ------------ Genre IDs to Names ----------------
-const getGenres = (genreIds) => {
-    const genreMap = {
-        28: 'Action',
-        12: 'Adventure',
-        16: 'Animation',
-        35: 'Comedy',
-        80: 'Crime',
-        99: 'Documentary',
-        18: 'Drama',
-        10751: 'Family',
-        14: 'Fantasy',
-        36: 'History',
-        27: 'Horror',
-        10402: 'Music',
-        9648: 'Mystery',
-        10749: 'Romance',
-        878: 'Science Fiction',
-        10770: 'TV Movie',
-        53: 'Thriller',
-        10752: 'War',
-        37: 'Western',
-    };
+        // Get the year or category from the clicked link
+        const year = e.target.getAttribute('data-year');
+        let url;
 
-    return genreIds.map((id) => genreMap[id] || 'Unknown');
-};
+        // API URL based on the selection
+        if (year === 'soon-to-theaters') {
+            url = `https://api.themoviedb.org/3/movie/upcoming?language=en-US`;
+        } else {
+            url = `https://api.themoviedb.org/3/discover/movie?primary_release_year=${year}&sort_by=popularity.desc&language=en-US`;
+        }
 
-// ------------ Certification IDs to rating ----------------
-const getCertification = (order) => certMap[order] ?? 'Unknown';
-const certMap = {
-    4: 'R',
-    2: 'PG',
-    5: 'NC-17',
-    1: 'G',
-    0: 'NR',
-    3: 'PG-13'
-};
+        try {
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log(`Movies for Year/Category "${year}":`, data.results);
+
+            // Display the movies
+            displayMovies(data.results);
+        } catch (error) {
+            console.error(`Error fetching movies for year/category "${year}":`, error);
+        }
+    });
+});

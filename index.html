@@ -11,7 +11,7 @@
     <div class="container">
         <div class="row my-4">
             <div class="col-12">
-                <h1>Movie Search</h1>
+                <h1>movie.pop(🍿)</h1>
             </div>
         </div>
 
@@ -54,7 +54,6 @@
                 <ul class="list-unstyled">
                     <li><a href="#" class="text-dark browse-genre" data-genre="28">Action</a></li>
                     <li><a href="#" class="text-dark browse-genre" data-genre="35">Comedy</a></li>
-                    <li><a href="#" class="text-dark browse-genre" data-genre="18">Drama</a></li>
                     <li><a href="#" class="text-dark browse-genre" data-genre="27">Horror</a></li>
                 </ul>
             </div>
@@ -63,10 +62,10 @@
             <div class="col-md-4">
                 <h5>Browse by Top Rated</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#" class="text-dark browse-top-rated" data-type="highest">Highest Rated</a></li>
-                    <li><a href="#" class="text-dark browse-top-rated" data-type="popular">Popular Movies</a></li>
-                    <li><a href="#" class="text-dark browse-top-rated" data-type="foreign">Top Rated Foreign Films</a></li>
-                    <li><a href="#" class="text-dark browse-top-rated" data-type="indie">Best Indie Films</a></li>
+                    <li><a href="#" class="text-dark browse-top-rated" data-type="trending">Trending</a></li>
+                    <li><a href="#" class="text-dark browse-top-rated" data-type="all-time-highest">All-Time Highest Rated</a></li>
+                    <li><a href="#" class="text-dark browse-top-rated" data-type="best-a24">Best A24 Films</a></li>
+
                 </ul>
             </div>
 
@@ -74,18 +73,24 @@
             <div class="col-md-4">
                 <h5>Browse by Year</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#" class="text-dark browse-year" data-year="2023">2023</a></li>
-                    <li><a href="#" class="text-dark browse-year" data-year="2022">2022</a></li>
-                    <li><a href="#" class="text-dark browse-year" data-year="2021">2021</a></li>
-                    <li><a href="#" class="text-dark browse-year" data-year="2020">2020</a></li>
+                    <li><a href="#" class="text-dark browse-year" data-year="soon-to-theaters">Soon To Theaters</a></li>
+                    <li><a href="#" class="text-dark browse-year" data-year="2023">2022</a></li>
+                    <li><a href="#" class="text-dark browse-year" data-year="2022">2021</a></li>
                 </ul>
             </div>
         </div>
         <!-- Movie Cards Row -->
         <div class="row">
             <div class="col-12" id="movies-container">
-                <!-- Movie cards will be dynamically appended here -->
+                <!-- Movie cards will be appended here w js-->
             </div>
+        </div>
+    </div>
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <h2>Welcome to movie.pop(🍿)</h2>
+            <p>Here's an annoying popup!</p>
+            <button id="close-popup">Close</button>
         </div>
     </div>
 
