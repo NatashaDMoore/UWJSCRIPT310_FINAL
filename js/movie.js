@@ -95,11 +95,11 @@ const formatString = (string) => {
 
 // ------------------------ renderMovieCard Function ------------------------
 const renderMovieCard = (movie) => {
-    // Create the main card container
+    // Create main card container
     const card = document.createElement('div');
     card.classList.add('row', 'mb-4', 'border', 'rounded', 'p-3', 'bg-light');
 
-    // Create the poster column
+    // Create poster column
     const posterCol = document.createElement('div');
     posterCol.classList.add('col-md-4', 'd-flex', 'align-items-center', 'justify-content-center');
     const posterImg = document.createElement('img');
@@ -110,7 +110,7 @@ const renderMovieCard = (movie) => {
     posterImg.classList.add('img-fluid', 'rounded');
     posterCol.appendChild(posterImg);
 
-    // Create the details column
+    // Create details column
     const detailsCol = document.createElement('div');
     detailsCol.classList.add('col-md-8');
     detailsCol.innerHTML = `
@@ -122,7 +122,7 @@ const renderMovieCard = (movie) => {
         <button class="btn btn-secondary add-to-watchlist" data-movie-id="${movie.id}" data-movie-title="${movie.title}">Add to Watch List</button>
     `;
 
-    // Append the columns to the card
+    // Append columns to the card
     card.appendChild(posterCol);
     card.appendChild(detailsCol);
 
@@ -145,7 +145,7 @@ const displayMovies = (movies) => {
         moviesContainer.appendChild(movieCard);
     });
 
-    // Add event listeners to "Add to Watch List" buttons
+    // Add event listeners to "add to watch list" buttons
     document.querySelectorAll('.add-to-watchlist').forEach((button) => {
         button.addEventListener('click', (e) => {
             const movieId = e.target.getAttribute('data-movie-id');
@@ -178,7 +178,7 @@ document.getElementById('close-popup').addEventListener('click', () => {
 form.addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    if (e.submitter !== document.getElementById('search-button')) return;
+    //if (e.submitter !== document.getElementById('search-button')) return;
 
     const title = formatString(titleSearch.value);
     const url = `https://api.themoviedb.org/3/search/movie?query=${title}`;
@@ -209,20 +209,19 @@ form.addEventListener('submit', async function (e) {
 // ====================================================================
 
 
-// Add Movie to Watch List
+// ------------- Add Movie to Watch List ------------------
 const addToWatchList = (movieId, movieTitle) => {
     try {
-        // Retrieve the existing watch list or initialize an empty array
+        // Get watch list
         const watchList = JSON.parse(localStorage.getItem('watchList')) || [];
 
-        // Add the new movie to the watch list
+        // Add movie to watch list
         const newMovie = { id: movieId, title: movieTitle };
         watchList.push(newMovie);
 
-        // Save the updated watch list to localStorage
+        // Save updated watch list to localStorage
         localStorage.setItem('watchList', JSON.stringify(watchList));
 
-        // Provide feedback to the user
         alert(`"${movieTitle}" has been added to your Watch List.`);
     } catch (error) {
         console.error('Error adding movie to Watch List:', error);
@@ -230,7 +229,7 @@ const addToWatchList = (movieId, movieTitle) => {
     }
 };
 
-// Event listener for "View Watch List" button
+// Event listener for "view watch list" button
 document.getElementById('view-watchlist').addEventListener('click', (e) => {
     e.preventDefault();
 
@@ -238,7 +237,7 @@ document.getElementById('view-watchlist').addEventListener('click', (e) => {
 
     watchListContainer.innerHTML = '';
 
-    // Retrieve watch list from localStorage
+    // get watch list from localStorage
     const watchList = JSON.parse(localStorage.getItem('watchList')) || [];
 
     if (watchList.length === 0) {
@@ -258,7 +257,7 @@ document.getElementById('view-watchlist').addEventListener('click', (e) => {
         watchListContainer.appendChild(movieRow);
     });
 
-    // Add event listeners to "Remove" buttons
+    // Add event listeners to "remove" buttons
     document.querySelectorAll('.remove-from-watchlist').forEach((button) => {
         button.addEventListener('click', (e) => {
             const movieId = e.target.getAttribute('data-movie-id');
@@ -267,7 +266,6 @@ document.getElementById('view-watchlist').addEventListener('click', (e) => {
     });
 
     const removeFromWatchList = (movieId) => {
-        const watchList = JSON.parse(localStorage.getItem('watchList')) || [];
         const updatedWatchList = watchList.filter((movie) => movie.id !== movieId); // Filters array and removes deleted movieID
         console.log(movieId);
         localStorage.setItem('watchList', JSON.stringify(updatedWatchList));
