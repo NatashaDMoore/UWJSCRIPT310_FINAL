@@ -1,6 +1,8 @@
 // Tokens and keys
-const apiKey = '2d9421d34e27b0950f7fb295d98ec028';
-const accessToken = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyZDk0MjFkMzRlMjdiMDk1MGY3ZmIyOTVkOThlYzAyOCIsIm5iZiI6MTczMzcxMzE4OC40ODQsInN1YiI6IjY3NTY1ZDI0MDk4MmI0NjI2NzhhMWU1NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.pGWPwreBh9nlrlcSaA-ecjpA3uuoReyGLQn5FZ6HnDs';
+//
+// -- !! Insert API and Access Token below !! --
+const apiKey = 'insert API Key';
+const accessToken = 'insert Access Token';
 
 const form = document.getElementById('movie-search-form');
 const titleSearch = document.getElementById('title-search');
